@@ -1,0 +1,67 @@
+% input - interval_m - interval matrix of size (n x n)
+% 
+% output - Enclosure for all stationary distributions of stochastic
+%          matrices in interval_m. 
+
+function x = solve_parametric(interval_m)
+    correct_dimensions(interval_m);
+
+
+    lower_m = inf(interval_m);
+    upper_m = sup(interval_m);
+    % solves the system of interval equations for computing the stable distribution
+
+    % Generate the parametric system matrices
+    system = generate_parametric_system(interval_m);
+    
+    % Calculate the center and radius of the interval system
+    radius = rad(system);
+    center = mid(system);
+
+    % Create the right-hand side vector
+    b = [zeros(1, size(upper_m, 1)), ...
+         zeros(1, size(upper_m, 1) * size(upper_m, 1)), ... % right hand side for D
+         zeros(1, size(upper_m, 1) * size(upper_m, 1)), ... % right hand side for N
+         1];
+     
+    b = [b, -b, zeros(1, size(upper_m, 1))];
+    
+    % Solve the system
+    x = solve(size(lower_m, 1), center, radius, b);
+end
+
+function x = solve(vars_count, center, mg, b)
+    options = optimoptions('linprog', 'Display', 'none');
+    x_inf = zeros(1, vars_count);
+    x_sup = ones(1, vars_count);
+
+    B = -eye(vars_count*vars_count);
+    for i=1:vars_count
+       B((vars_count)*(i-1) + i,vars_count*(i-1) + i) = 1;
+    end
+
+    A = [-eye(vars_count), zeros(vars_count, size(mg, 2) - vars_count);
+             zeros(vars_count*vars_count,vars_count),zeros(vars_count*vars_count),B;
+             zeros(vars_count*vars_count,vars_count),-eye(vars_count*vars_count),zeros(vars_count*vars_count)];
+        
+    b = [b , zeros(1,vars_count*vars_count+vars_count*vars_count)];
+
+    for i = 1:vars_count
+        f1 = zeros(1, size(center, 2));
+        f1(i) = 1;  
+        constraints_ineq = [center - mg; -center - mg; A];
+
+        constraints_ineq = sparse(constraints_ineq);
+
+        [~, fval_inf] = linprog(f1, constraints_ineq, b, [], [], [], [], options);
+        [~, fval_sup] = linprog(-f1, constraints_ineq, b, [], [], [], [], options);
+    %    disp(a);
+    %    disp(b);
+        x_sup(i) = -fval_sup;
+        x_inf(i) = fval_inf;
+    end
+    x = infsup(x_inf, x_sup);
+   % disp(x);
+end
+
+
