@@ -6,7 +6,6 @@
 function x = solve_parametric(interval_m)
     correct_dimensions(interval_m);
 
-
     lower_m = inf(interval_m);
     upper_m = sup(interval_m);
     % solves the system of interval equations for computing the stable distribution
@@ -23,7 +22,6 @@ function x = solve_parametric(interval_m)
          zeros(1, size(upper_m, 1) * size(upper_m, 1)), ... % right hand side for D
          zeros(1, size(upper_m, 1) * size(upper_m, 1)), ... % right hand side for N
          1];
-     
     b = [b, -b, zeros(1, size(upper_m, 1))];
     
     % Solve the system
@@ -55,8 +53,7 @@ function x = solve(vars_count, center, mg, b)
 
         [~, fval_inf] = linprog(f1, constraints_ineq, b, [], [], [], [], options);
         [~, fval_sup] = linprog(-f1, constraints_ineq, b, [], [], [], [], options);
-    %    disp(a);
-    %    disp(b);
+
         x_sup(i) = -fval_sup;
         x_inf(i) = fval_inf;
     end
