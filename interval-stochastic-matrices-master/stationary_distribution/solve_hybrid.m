@@ -20,12 +20,8 @@ function x = solve_hybrid(interval_m)
     padded_non_parametric_system = [non_parametric_system, zeros(rows_np, cols_p - cols_np)];
 
     % Concatenate parametric and padded non-parametric systems
-
-    disp(size(padded_non_parametric_system))
-    disp(size(parametric_system))
     system = [padded_non_parametric_system;
               parametric_system];
-    disp(system)
 
     % Calculate the center and radius of the interval system
     radius = rad(system);
@@ -34,15 +30,11 @@ function x = solve_hybrid(interval_m)
     b1 = [zeros(1, size(upper_m1, 1)), ...
          zeros(1, size(upper_m1, 1) * size(upper_m1, 1)), ... % right hand side for D
          zeros(1, size(upper_m1, 1) * size(upper_m1, 1)), ... % right hand side for N
-         1];
-   
+         1]; 
 
     vars_count = size(inf(interval_m), 1);
     b2 = zeros(1, vars_count);
     b = [b2, b1,-b2, -b1, zeros(1, size(upper_m1, 1))];
-
-    disp(b2)
-    disp(non_parametric_system)
 
     % Solve the system
     x = solve(vars_count, center, ...
@@ -72,23 +64,14 @@ function x = solve(vars_count, center, mg, b, cols_par)
         f1 = zeros(1, size(center, 2));
         f1(i) = 1;  
         constraints_ineq = [center - mg; -center - mg; A];
-    %    disp("lhs")
-    %    disp(constraints_ineq)
-        disp("consraint:")
-        disp(size(constraints_ineq))
-        disp(size(b))
-        disp("rhs:")
-        disp(b)
 
         constraints_ineq = sparse(constraints_ineq);
 
         [~, fval_inf] = linprog(f1, constraints_ineq, b, [], [], [], [], options);
         [~, fval_sup] = linprog(-f1, constraints_ineq, b, [], [], [], [], options);
-        disp(fval_sup);
-        disp(fval_inf);
+
         x_sup(i) = -fval_sup;
         x_inf(i) = fval_inf;
     end
     x = infsup(x_inf, x_sup);
-    % disp(x);
 end
