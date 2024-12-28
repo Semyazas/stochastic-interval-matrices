@@ -36,9 +36,13 @@ end
 function [average_ratio,average_time] = small_experiment(dimension, number_of_iterations,error)
     average_ratio_non_parametric = 0;
     average_ratio_parametric     = 0;
+    average_ratio_hybrid         = 0;
+    average_ratio_exact          = 0;
+ 
     average_time_parametric      = 0;
     average_time_non_parametric  = 0;
     average_time_exact           = 0;
+    average_time_hybrid          = 0;
 
     for i=1:number_of_iterations
         [lower,upper] = rand_int_irreduc_stoch_matrix(dimension,error);
@@ -61,21 +65,36 @@ function [average_ratio,average_time] = small_experiment(dimension, number_of_it
         x_exact = solve_exact(infsup(lower, upper));
 
         average_time_exact = average_time_exact + toc;
-        
-        average_ratio_parametric = average_ratio_parametric + ratio(x_parametric,x_exact);
-        average_ratio_non_parametric = average_ratio_non_parametric + ratio(x_non_parametric,x_exact);
 
+        tic 
+        x_hybrid = solve_hybrid(infsup(lower,upper));
+
+        average_time_hybrid = average_time_hybrid + toc ;
+        
+        average_ratio_parametric     = average_ratio_parametric + ratio(x_parametric,x_exact);
+        average_ratio_non_parametric = average_ratio_non_parametric + ratio(x_non_parametric,x_exact);
+        average_ratio_hybrid         = average_ratio_hybrid + ratio(x_hybrid,x_exact);
+
+        disp(x_hybrid);
+        disp("--------");
+        disp(x_parametric);
+        disp("aaaaaaaaaaaaaaaa");
     end
     average_ratio_parametric = average_ratio_parametric / number_of_iterations;
     average_ratio_non_parametric = average_ratio_non_parametric / number_of_iterations;
+    average_ratio_hybrid = average_ratio_hybrid / number_of_iterations;
+    
 
     average_time_parametric = average_time_parametric / number_of_iterations;
     average_time_non_parametric = average_time_non_parametric / number_of_iterations;
     average_time_exact = average_time_exact / number_of_iterations;
+    average_time_hybrid = average_time_hybrid / number_of_iterations;
 
+    disp("average ratio hybrid:          " + average_ratio_hybrid);
     disp("average ratio parametric:      " + average_ratio_parametric);
     disp("average ratio non parametric:  " + average_ratio_non_parametric);
 
+    disp("average time hybrid            " + average_time_hybrid)
     disp("average time parametric:       " + average_time_parametric);
     disp("average_time_non_parametric:   " + average_time_non_parametric);
     disp("average time exact:            " + average_time_exact);

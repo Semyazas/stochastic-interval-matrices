@@ -39,6 +39,8 @@ function [average_ratio] = small_experiment(dimension, number_of_iterations,erro
     average_time_parametric = 0;
     average_time_non_parametric = 0;
     average_ratio_intersection_non_par = 0;
+    average_ratio_hybrid = 0;
+    average_time_hybrid = 0;
     for i=1:number_of_iterations
         [lower,upper] = rand_int_irreduc_stoch_matrix(dimension,error);
        
@@ -53,17 +55,28 @@ function [average_ratio] = small_experiment(dimension, number_of_iterations,erro
 
         average_time_parametric = average_time_parametric + toc;
 
+        tic
+        x_hybrid = solve_hybrid(infsup(lower,upper));
 
+        average_time_hybrid = average_time_hybrid + toc;
+        
+        average_ratio_hybrid = average_ratio_hybrid + ratio(x_hybrid, x_non_parametric);
         average_ratio = average_ratio + ratio(x_parametric,x_non_parametric);
         average_ratio_intersection_non_par = average_ratio_intersection_non_par + ratio(x_non_parametric,intersect(x_parametric,x_non_parametric));
     end
-    average_ratio = average_ratio / number_of_iterations;
+
     average_time_parametric = average_time_parametric / number_of_iterations;
     average_time_non_parametric = average_time_non_parametric / number_of_iterations;
+    average_time_hybrid = average_time_hybrid / number_of_iterations;
     average_ratio_intersection_non_par = average_ratio_intersection_non_par / number_of_iterations;
+    average_ratio = average_ratio / number_of_iterations;
+    average_ratio_hybrid = average_ratio_hybrid / number_of_iterations;
+    
 
     disp("average ratio:               " + average_ratio);
+    disp("average ratio hybrid:        " + average_ratio_hybrid);
     disp("average ratio intersection:  " + average_ratio_intersection_non_par);
     disp("average time parametric:     " + average_time_parametric);
-    disp("average_time_non_parametric: " + average_time_non_parametric)
+    disp("average_time_non_parametric: " + average_time_non_parametric);
+    disp("average time hybrid:         " + average_time_hybrid);
 end
