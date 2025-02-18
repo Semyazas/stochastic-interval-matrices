@@ -2,11 +2,8 @@ function int_M = random_irreduc_stoch_matrix_with_zeros(size,p)
 
     % Ensure irreducibility by checking if the matrix forms a strongly connected graph
     int_M = generate_random_graph(p,size);
-    while (int_M == 0 | ~is_irreducible(int_M))
-        int_M = generate_random_graph(p,size);
-    end
-end
 
+end
 function G = generate_random_graph(p, size)
     G = zeros(size); % Initialize adjacency matrix
 
@@ -21,8 +18,7 @@ function G = generate_random_graph(p, size)
         
         % Ensure at least one nonzero entry per column to avoid division by zero
         if all(col == 0)
-            G = 0;
-            return
+            ret
         end
         
         col = col / sum(col); % Normalize to make column stochastic
