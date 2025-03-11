@@ -12,10 +12,13 @@
 % ratios and times for different methods.
 
 function experiment_with_exact_stationary_distribution(dimensions, ...
-                                                number_of_iterations,error)
+                                                number_of_iterations,error, generate_random_IISM)
+    options = optimset('linprog');
+    options.Display = 'off';
+
     for i=1:size(dimensions,2)
         disp(dimensions(i));
-        small_experiment(dimensions(i),number_of_iterations,error);
+        small_experiment(dimensions(i),number_of_iterations,error, generate_random_IISM);
         disp("");
         disp("---------------------------------------------------");
         disp("");
@@ -33,7 +36,7 @@ end
 %   average_ratio - The average ratio of the results from the parametric and non-parametric methods to the exact method.
 %   average_time - The average time taken by each method.
 
-function [average_ratio,average_time] = small_experiment(dimension, number_of_iterations,error)
+function [average_ratio,average_time] = small_experiment(dimension, number_of_iterations,error, generate_random_IISM)
     average_ratio_non_parametric = 0;
     average_ratio_parametric     = 0;
     average_ratio_hybrid         = 0;
@@ -45,7 +48,7 @@ function [average_ratio,average_time] = small_experiment(dimension, number_of_it
     average_time_hybrid          = 0;
 
     for i=1:number_of_iterations
-        [lower,upper] = rand_int_irreduc_stoch_matrix(dimension,error);
+        [lower,upper] =  generate_random_IISM(dimension,error);
         
       % disp("random generátor vygeneroval");
         tic
@@ -76,9 +79,7 @@ function [average_ratio,average_time] = small_experiment(dimension, number_of_it
         average_ratio_hybrid         = average_ratio_hybrid + ratio(x_hybrid,x_exact);
 
         disp(x_hybrid);
-        disp("--------");
         disp(x_parametric);
-        disp("aaaaaaaaaaaaaaaa");
     end
     average_ratio_parametric = average_ratio_parametric / number_of_iterations;
     average_ratio_non_parametric = average_ratio_non_parametric / number_of_iterations;
