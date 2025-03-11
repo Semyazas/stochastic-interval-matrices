@@ -9,14 +9,14 @@
 %   lower - A matrix representing the lower bound of the irreducible stochastic matrix
 %   upper - A matrix representing the upper bound of the irreducible stochastic matrix
 
-function [lower, upper] = rand_int_irreduc_stoch_matrix(size, error)
+function [lower, upper] = rand_int_irreduc_stoch_matrix(dimension, error)
     % Initialize a 2x2 identity matrix to start with
     x = [1 0; 0 1];
     mc = dtmc(x);
     
     % Generate an irreducible stochastic matrix
     while isreducible(mc)
-        x = rand_stoch_matrix(size);
+        x = rand_stoch_matrix(dimension);
         mc = dtmc(x);
     end
     
@@ -33,24 +33,24 @@ end
 % Outputs:
 %   x - A size-by-size stochastic matrix where each column sums to 1
 
-function x = rand_stoch_matrix(size)
-    x = zeros(size);
+function x = rand_stoch_matrix(dimension)
+    x = zeros(dimension);
     max_num = 10000;
 
     % Generate random values for the matrix
-    for i = 1:size
-        for j = 1:size
+    for i = 1:dimension
+        for j = 1:dimension
             out = (randi(max_num, 1) - 1) / (max_num - 1); % Output in range [0, 1]
             x(i, j) = out; 
         end
     end
     % Normalize each column to make the matrix stochastic
-    for j = 1:size
+    for j = 1:dimension
         col_sum = irreducibility.get_column_sum(x, j);
         if col_sum == 0 || isnan(col_sum)
-            x = rand_stoch_matrix(size); % Retry if column sum is zero or NaN
+            x = rand_stoch_matrix(dimension); % Retry if column sum is zero or NaN
         else
-            for i = 1:size
+            for i = 1:dimension
                 x(i, j) = x(i, j) / col_sum;
             end
         end
