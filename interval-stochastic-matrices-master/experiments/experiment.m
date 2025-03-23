@@ -17,8 +17,6 @@ function experiment(dimensions, number_of_iterations,error, generate_random_IISM
     options.Display = 'off';
 
     % we test for each dimension
-    disp(size(dimensions))
-    disp("aa")
     for i=1:length(dimensions)
         disp(size(dimensions))
         disp(dimensions(i));
