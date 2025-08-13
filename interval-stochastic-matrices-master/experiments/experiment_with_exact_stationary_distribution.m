@@ -48,38 +48,52 @@ function [average_ratio,average_time] = small_experiment(dimension, number_of_it
     average_time_hybrid          = 0;
 
     for i=1:number_of_iterations
-        [lower,upper] =  generate_random_IISM(dimension,error);
-        
-      % disp("random generátor vygeneroval");
-        tic
 
-        x_non_parametric = solve_non_parametric(infsup(lower, upper));
-      % disp("NEparametrický program doběhl");
-        average_time_non_parametric = average_time_non_parametric + toc;
+        was_interval = false;
+        while ~was_interval
 
-        tic 
-        x_parametric = solve_parametric(infsup(lower, upper));
+            [lower,upper] =  generate_random_IISM(dimension,error);
+            
+          % disp("random generátor vygeneroval");
+            tic
+    
+            x_non_parametric = solve_non_parametric(infsup(lower, upper));
+          % disp("NEparametrický program doběhl");
+            average_time_non_parametric = average_time_non_parametric + toc;
+    
+            tic 
+            x_parametric = solve_parametric(infsup(lower, upper));
+    
+          % disp("parametrický program doběhl");
+    
+            average_time_parametric = average_time_parametric + toc;
+    
+            tic
+    
+            x_exact = solve_exact(infsup(lower, upper));
+    
+            average_time_exact = average_time_exact + toc;
+    
+            tic 
+            x_hybrid = solve_hybrid(infsup(lower,upper));
+    
+            average_time_hybrid = average_time_hybrid + toc;
+     %       disp(ratio(x_parametric,x_exact))
 
-      % disp("parametrický program doběhl");
-
-        average_time_parametric = average_time_parametric + toc;
-
-        tic
-        x_exact = solve_exact(infsup(lower, upper));
-
-        average_time_exact = average_time_exact + toc;
-
-        tic 
-        x_hybrid = solve_hybrid(infsup(lower,upper));
-
-        average_time_hybrid = average_time_hybrid + toc ;
-        
-        average_ratio_parametric     = average_ratio_parametric + ratio(x_parametric,x_exact);
-        average_ratio_non_parametric = average_ratio_non_parametric + ratio(x_non_parametric,x_exact);
-        average_ratio_hybrid         = average_ratio_hybrid + ratio(x_hybrid,x_exact);
-
-        disp(x_hybrid);
-        disp(x_parametric);
+            if  ratio(x_parametric,x_exact) ~= inf
+                average_ratio_parametric     = average_ratio_parametric + ratio(x_parametric,x_exact);
+                average_ratio_non_parametric = average_ratio_non_parametric + ratio(x_non_parametric,x_exact);
+                average_ratio_hybrid         = average_ratio_hybrid + ratio(x_hybrid,x_exact);
+                was_interval = true;
+            end
+            
+      %      disp("x_hybrid")
+      %      disp(x_hybrid);
+      %      disp("x_parametric")
+      %      disp(x_parametric);
+      %      disp("x_exact")
+      %      disp(x_exact)
+        end
     end
     average_ratio_parametric = average_ratio_parametric / number_of_iterations;
     average_ratio_non_parametric = average_ratio_non_parametric / number_of_iterations;

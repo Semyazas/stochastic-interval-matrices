@@ -15,7 +15,7 @@ function [lower, upper] = rand_int_irreduc_stoch_matrix_vector_method(size, erro
     
     % Generate an irreducible stochastic matrix
     while isreducible(mc)
-        disp("funguju")
+     %   disp("funguju")
         x = rand_stoch_matrix_vec(size);
         mc = dtmc(transpose(x));
     end
@@ -40,8 +40,8 @@ function x = rand_stoch_matrix_vec(size)
         col = rand(size, 1);
         x(:,i) = col;
     end
-    disp(x)
-    disp("aaa")
+%    disp(x)
+%    disp("aaa")
     % Normalize each column to make the matrix stochastic
     for j = 1:size
         col_sum = irreducibility.get_column_sum(x, j);

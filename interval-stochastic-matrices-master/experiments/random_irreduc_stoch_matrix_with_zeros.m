@@ -33,6 +33,7 @@ end
 function flag = is_irreducible(M)
     % Check if matrix M is irreducible using graph theory
     G = digraph(M > 0); % Create a directed graph based on nonzero elements
+    G.plot()
     flag = all(reachability(G)); % Check strong connectivity
 end
 

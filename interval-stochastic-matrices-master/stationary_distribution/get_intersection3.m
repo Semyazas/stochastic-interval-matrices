@@ -14,16 +14,39 @@ function [V,I] = get_intersection3(interval_matrix)
    V = [];
    I = [];
    for i=1:size(lower,1)
-       [system_bounds,RHS] = get_system_bounds(inf(interval_matr), ...
-                                          sup(interval_matr),i);
+       
 
-       inters    = intersectionHull('lcon',system_bounds,RHS,[],[], ...
-                                         'lcon',[],[],ones(1,size(lower,1)),0);    
-       V = [V; inters.vert];
+       [LHS,RHS] = get_system_bounds(inf(interval_matr), ...
+                                          sup(interval_matr),i);
+      %  disp("inf")
+      %  disp(inf(interval_matrix))
+      %  disp("sup")
+      %  disp(sup(interval_matrix))
+      %  disp("-")
+      %  disp(interval_matr)
+      %  disp("system_bounds")
+      %  disp(LHS)
+      %  disp("RHS")
+      %  disp(RHS)
+      % disp("--------------------------")
+
+       P = Polyhedron("A",LHS,"b",RHS);
+       Hplane = Polyhedron("Ae",ones(1,size(lower,1)),"be",0);
+
+       inters = intersect(P, Hplane);
+
+
+      % inters    = intersectionHull('lcon',system_bounds,RHS,[],[], ...
+      %                              'lcon',[],[],ones(1,size(lower,1)),0); 
+
+       V = [V; inters.V];
+      % disp(V)
+      % disp("--------------------------")
+
        if i > 1
-           I(end+1) = I(i-1) + size(inters.vert,1);
+           I(end+1) = I(i-1) + size(inters.V,1);
        else
-           I = [size(inters.vert,1)];
+           I = [size(inters.V,1)];
        end
    end
    V = transpose(V);
